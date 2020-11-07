@@ -1,4 +1,4 @@
-Function ConvertFrom-HtmlTable {
+Function Read-HtmlTable {
     [CmdletBinding()][OutputType([Object[]])] param(
         [Parameter(ValueFromPipeLine = $True, Mandatory = $True)][String]$html
     )
@@ -16,7 +16,7 @@ Function ConvertFrom-HtmlTable {
         $body = ([Xml]($html -Replace '^[\s\S]*(?=\<body\>)' -Replace '(?<=\<\/body\>)[\s\S]*$')).body
         foreach($table in ($body | Get-TopElements 'table')) {
             $Names = $Null
-            foreach ($tr in $table.GetElementsByTagName('tr')) {
+            foreach ($tr in ($table | Get-TopElements 'tr')) {
                 if (!$Names) { $Names = ($tr | Get-TopElements 'th').'#text' }
                 if (!$Names) { $Names = ($tr | Get-TopElements 'td').'#text' }
                 else {
