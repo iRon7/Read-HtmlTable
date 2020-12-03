@@ -1,26 +1,28 @@
 Function Read-HtmlTable {
     [CmdletBinding()][OutputType([Object[]])] param(
-        [Parameter(ValueFromPipeLine = $True, Mandatory = $True)][String]$html
+        [Parameter(ValueFromPipeLine = $True, Mandatory = $True)][String]$Html
     )
     Begin {
-        Function Get-TopElements { # Get elements by (insensitive) name that do not have a (grand)parent with the same name
-            [CmdletBinding()][OutputType([Xml.XmlElement[]])] param(
-                [Parameter(Mandatory = $True)][String]$Name,
-                [Parameter(Mandatory = $True, ValueFromPipeLine = $True)][Xml.XmlElement]$Element
+        Function Get-Elements { # Get closed descendants by tag name
+            [CmdletBinding()][OutputType([__ComObject[]])] param(
+                [Parameter(Mandatory = $True)][String]$TagName,
+                [Parameter(Mandatory = $True, ValueFromPipeLine = $True)]$Element
             )
-            if ($Element.Name -eq $Name) { $Element }
-            else { $Element.SelectNodes('*') | Foreach-Object { $_ | Get-TopElements $Name } } 
+            if ($Element.tagName -eq $TagName) { $Element }
+            else { $Element.Children | Foreach-Object { $_ | Get-Elements $TagName } } 
         }
     }
     Process {
-        $body = ([Xml]($html -Replace '^[\s\S]*(?=\<body\>)' -Replace '(?<=\<\/body\>)[\s\S]*$')).body
-        foreach($table in ($body | Get-TopElements 'table')) {
+        $Unicode = [System.Text.Encoding]::Unicode.GetBytes($Html)
+        $Document = New-Object -Com 'HTMLFile'
+        if ($Document.IHTMLDocument2_Write) { $Document.IHTMLDocument2_Write($Unicode) } else { $Document.write($Unicode) }
+        foreach($table in ($Document.Body | Get-Elements 'table')) {
             $Names = $Null
-            foreach ($tr in ($table | Get-TopElements 'tr')) {
-                if (!$Names) { $Names = ($tr | Get-TopElements 'th').'#text' }
-                if (!$Names) { $Names = ($tr | Get-TopElements 'td').'#text' }
+            foreach ($tr in ($table | Get-Elements 'tr')) {
+                if (!$Names) { $Names = ($tr | Get-Elements 'th').innerText }
+                if (!$Names) { $Names = ($tr | Get-Elements 'td').innerText }
                 else {
-                    $Values = ($tr | Get-TopElements 'td').'#text'
+                    $Values = ($tr | Get-Elements 'td').innerText
                     $Properties = @{}; $i = 0
                     Foreach ($Value in $Values) { $Properties[$Names[$i++]] = $Value }
                     [pscustomobject]$Properties
