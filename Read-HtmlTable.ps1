@@ -22,8 +22,7 @@ Function Read-HtmlTable {
             if (!$PSBoundParameters.ContainsKey('TableIndex') -or $Index++ -In $TableIndex) {
                 $Names = $Null
                 foreach ($tr in ($table | Get-Elements 'tr')) {
-                    if (!$Names) { $Names = ($tr | Get-Elements 'th').innerText }
-                    if (!$Names) { $Names = ($tr | Get-Elements 'td').innerText }
+                    if ($Null -eq $Names) { $Names = ($tr | Get-Elements 'th').innerText }
                     else {
                         $Values = ($tr | Get-Elements 'td').innerText
                         $Properties = [Ordered]@{}
@@ -31,6 +30,7 @@ Function Read-HtmlTable {
                         for ($i = 0; $i -lt $Count; $i++) { $Properties[$Names[$i]] = $Values[$i] }
                         if ($Properties.Count -gt 0) { [pscustomobject]$Properties }
                     }
+                    if ($Null -eq $Names) { $Names = ($tr | Get-Elements 'td').innerText }
                 }
             }
         }
