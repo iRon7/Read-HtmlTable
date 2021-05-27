@@ -81,8 +81,10 @@ Function Read-HtmlTable {
                 [Parameter(Mandatory = $True)][String[]]$TagName,
                 [Parameter(Mandatory = $True, ValueFromPipeLine = $True)]$Element
             )
-            if ($TagName -Contains $Element.tagName) { $Element }
-            else { $Element.Children |Where-Object { $_ } |Foreach-Object { $_ |Get-TopElements $TagName } }
+            Process {
+                if ($TagName -Contains $Element.tagName) { $Element }
+                else { $Element.Children |Where-Object { $_ } |Foreach-Object { $_ |Get-TopElements $TagName } }
+            }
         }
     }
     Process {
@@ -102,7 +104,7 @@ Function Read-HtmlTable {
                 $BodyRows = @($TableBody |Get-TopElements 'tr')
                 $Names = [System.Collections.Generic.List[string]]::new()
                 if ($Header) { $DataIndex = 0 }
-                else { 
+                else {
                     if ($THead -and !$PSBoundParameters.ContainsKey('HeaderIndex')) { $HeaderIndex = 0..($HeadRows.Count - 1) }
                     foreach ($TR in $HeadRows[$HeaderIndex]) {
                         $i = 0
