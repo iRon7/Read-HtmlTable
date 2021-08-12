@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.4
+.VERSION 1.0.5
 .GUID 6ddb4b24-29bc-4268-a62f-402b3ee28e3d
 .AUTHOR iRon
 .COMPANYNAME
@@ -109,6 +109,7 @@ Process {
     $Unicode = [System.Text.Encoding]::Unicode.GetBytes($InputObject)
     $Document = New-Object -Com 'HTMLFile'
     if ($Document.IHTMLDocument2_Write) { $Document.IHTMLDocument2_Write($Unicode) } else { $Document.write($Unicode) }
+    $Document.Close()
     $Index = 0
     foreach($Table in ($Document.Body |Get-TopElements 'table')) {
         if (!$PSBoundParameters.ContainsKey('TableIndex') -or $Index++ -In $TableIndex) {
