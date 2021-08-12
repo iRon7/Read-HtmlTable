@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 1.0.5
+.VERSION 1.0.6
 .GUID 6ddb4b24-29bc-4268-a62f-402b3ee28e3d
 .AUTHOR iRon
 .COMPANYNAME
@@ -165,5 +165,6 @@ Process {
             }
         }
     }
+    $Null = [System.Runtime.Interopservices.Marshal]::ReleaseComObject($Document)
 }
 
