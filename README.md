@@ -118,15 +118,15 @@ Tax                Tax               7%         42.76
 Total              Total             Total      653.64
 ```
 
-### Parameters
-
 **Inputs**  
 String or Uri
 
 **Outputs**  
 `PSCustomObject[]`
 
-**`-Content <string>`**  
+### Parameters
+
+**`-InputObject <string>`**  
 The html content (string) that contains a html table.
 
 If the string is less than 2048 characters and contains a valid uri protocol, the content is downloaded
@@ -146,20 +146,24 @@ If you enter fewer column headers than there are data columns, the remaining dat
 If you enter more column headers than there are data columns, the additional column headers are created
 with empty data columns.
 
+A `$Null` instead of a column name, will span the respective column with previous column.
+
+> Note: To select specific columns or skip any data (or header) rows, use `Select-Object` cmdlet
+
 **`-TableIndex <int[]>`**  
-Specifies which tables should be selected from the html content (where `0` refers to the first table).  
+Specifies which tables should be selected from the html content (where 0 refers to the first table).
 By default, all tables are extracted from the content.
 
-> Note: the tables headers should be unified to properly output or diplay the tables.
+> Note: in case of multiple tables, the headers should be unified to properly output or display of each table.  
 (see: https://github.com/PowerShell/PowerShell/issues/13906)
 
-**`-HeaderIndex <int[]>`**  
-Specifies which header row should be used for the property name. In case the header resides in the same
-table block container as the data, the data is presumed to start right after the last header index.  
-**Default:** `0`, meaning the first row in the table is presumed the header row
+**`-Separator <string>`**  
+Specifies the characters used to join a header with is spanned over multiple columns.  
+**default:** space character
 
-> note: To skip any data rows, use `|Select-Object -Skip ...`.
+**`-Delimiter <string>`**  
+Specifies the characters used to join a header with is spanned over multiple rows.  
+**default:** the newline characters used by the operating system
 
-**`-DefaultNameFormat <string>`**  
-The format used for in case there is no header defined in the HTML table. Where `"{0}"` refers to the column index.  
-**Default:** `'Column {0}'`
+**`-NoTrim`**  
+By default, all header - and data text is trimmed, to disable trimming, use the -NoTrim parameter.
