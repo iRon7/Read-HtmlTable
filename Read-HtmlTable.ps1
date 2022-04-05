@@ -1,5 +1,5 @@
 <#PSScriptInfo
-.VERSION 2.0.0
+.VERSION 2.0.1
 .GUID 6ddb4b24-29bc-4268-a62f-402b3ee28e3d
 .AUTHOR iRon
 .COMPANYNAME
@@ -60,15 +60,15 @@ PSCustomObject[]
     (see: https://github.com/PowerShell/PowerShell/issues/13906)
 
 .PARAMETER Separator
-    Specifies the characters used to join a header with is spanned over multiple columns
+    Specifies the characters used to join a header with is spanned over multiple columns.
     (default: space character)
 
 .PARAMETER Delimiter
-    Specifies the characters used to join a header with is spanned over multiple rows
+    Specifies the characters used to join a header with is spanned over multiple rows.
     (default: the newline characters used by the operating system)
 
 .PARAMETER NoTrim
-    By default, all header - and data text is trimmed, to disable automatic trimming, use the -NoTrim parameter.
+    By default, all header - and data text is trimmed, to disable trimming, use the -NoTrim parameter.
 
 .EXAMPLE
 
@@ -147,10 +147,7 @@ Begin {
 Process {
     if (!$Uri -and $InputObject.Length -le 2048 -and ([Uri]$InputObject).AbsoluteUri) { $Uri = [Uri]$InputObject }
     $Response = if ($Uri -is [Uri] -and $Uri.AbsoluteUri) { Try { Invoke-WebRequest $Uri } Catch { Throw $_ } }
-    $Html = if ($Response) {
-        if ($Response.PSObject.Properties.Name -Contains 'ParsedHtml') { $Response.ParsedHtml }
-        else { ParseHtml $Response.RawContent }
-    } else { ParseHtml $InputObject }
+    $Html = if ($Response) { ParseHtml $Response.RawContent } else { ParseHtml $InputObject }
     $i = 0
     foreach($Table in ($Html.Body |GetTopElement 'table')) {
         if (!$PSBoundParameters.ContainsKey('TableIndex') -or $i++ -In $TableIndex) {
