@@ -1,3 +1,6 @@
+## 2022-04-04 2.0.1 (iRon)
+  - Fixed
+    - Resolved [Invoke-WebRequest freezes / hangs](https://github.com/iRon7/Read-HtmlTable/issues/6) in Windows PowerShell (due to unicode?)
 ## 2022-04-04 2.0.0 (iRon)
   This versions has several break changes mainly in the available parameters  
   - Fixed
